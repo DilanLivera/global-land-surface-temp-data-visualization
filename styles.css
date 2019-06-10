@@ -1,0 +1,30 @@
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+}
+
+.svg {
+  transform: translateY(-60px);
+  border-radius: 15px;
+  padding-top: 50px;
+  box-shadow: 7px 7px 19px 0px  rgba(189,192,199,1), 
+              -7px -7px 19px 0px  rgba(189,192,199,1),
+              7px -7px 19px 0px  rgba(189,192,199,1),
+              -7px 7px 19px 0px  rgba(189,192,199,1);
+}
+
+.title {
+  transform: translateY(50px);
+  text-align: center;  
+  font-weight: 100;
+  font-size: 30px;
+  margin: 0;
+}
+
+.description {
+  transform: translateY(40px);
+  font-weight: 600;
+  font-size: 18px;
+}
