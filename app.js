@@ -120,7 +120,6 @@ document.addEventListener("DOMContentLoaded", function() {
       //add legend
       legend
         .append("g")
-          .attr("id", "legend")
         .selectAll("rect")
         .data([
           minTemp,
@@ -169,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .enter()
         .append("rect")
         .classed("cell", true)
-          .attr("data-month", d => d.month)
+          .attr("data-month", d => d.month-1)
           .attr("data-year", d => d.year)
           .attr("data-temp", d => d.variance+baseTemperature)
           .attr("x", d => xScale(d3.timeParse(yearSpecifier)(d.year)))
@@ -191,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
           d3.select(this).classed("highlight", true);
 
           tooltip
+            .attr("data-year", year)
             .style("opacity", 1)
             .style("left", `${d3.event.x - tooltip.node().offsetWidth/2}px`)
             .style("top", `${d3.event.y + 25}px`)
