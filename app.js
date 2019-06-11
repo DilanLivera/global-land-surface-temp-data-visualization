@@ -30,6 +30,9 @@ document.addEventListener("DOMContentLoaded", function() {
       let data = response.monthlyVariance; // [{year: 1753,, month: 1, variance: -1.366}, {}, ...]
       let minYear = d3.min(data, d => d.year);
       let maxYear = d3.max(data, d => d.year);
+      // let minTemp = (d3.min(data, d => d.variance) + baseTemperature).toFixed(1);
+      // let maxTemp = (d3.max(data, d => d.variance) + baseTemperature).toFixed(1);      
+      // let tempArr = [2.8, 3.9, 5.0, 6.1, 7.2, 8.3, 9.5, 10.6, 11.7, 12.8];
       
       //setup svg
       let svg = d3.select("svg")
@@ -51,19 +54,24 @@ document.addEventListener("DOMContentLoaded", function() {
       //setup scales
       let xScale = d3.scaleTime()
                      .domain([d3.timeParse(yearSpecifier)(minYear), d3.timeParse(yearSpecifier)(maxYear)])
-                     .range([margin.left, innerWidth]);
-      
+                     .range([margin.left, innerWidth]);      
 
       let yScale = d3.scaleBand()
                      .domain(months)                    
-                     .range([margin.top, innerHeight])
-
+                     .range([margin.top, innerHeight]);
 
       let colorScale = d3.scaleQuantize()
                          .domain(d3.extent(data, d => baseTemperature + d.variance))
                          .range(colors);
-                        //  .interpolator(d3.interpolateSpectral);
-      
+
+      // let legendXScale = d3.scaleLinear()
+      //                      .domain([1.7, 13.9])
+      //                      .range([margin.left, 600])
+
+      // let legendColorScale = d3.scaleThreshold()
+      //                          .domain([1.7, 2.8, 3.9, 5.0, 6.1, 7.2, 8.3, 9.5, 10.6, 11.7, 12.8, 13.9])
+      //                          .range(colors);
+
       //setup axis
       let xAxis = d3.axisBottom(xScale)                    
                     .tickFormat(d3.timeFormat("%Y"))
@@ -72,24 +80,55 @@ document.addEventListener("DOMContentLoaded", function() {
 
       let yAxis = d3.axisLeft(yScale)
                     .tickSizeOuter(0)
-                    
-                    
-                    // .tickFormat(d3.timeFormat("%B"))
-                    // .tickPadding(10)
+
+      // let legendAxis = d3.axisBottom(legendXScale)                         
+      //                    .tickValues(tempArr)
+      //                    .tickFormat(d => d)
+      //                    .tickSizeOuter(0)
 
       //add axis
-      svg.append("g")
-           .attr("id", "x-axis")
-         .call(xAxis)
-           .attr("transform", `translate(0,${innerHeight})`)
-         .selectAll("text")
-         .style("font-size", "14")
+      svg
+        .append("g")
+          .attr("id", "x-axis")
+        .call(xAxis)
+          .attr("transform", `translate(0,${innerHeight})`)
+          .style("font-size", "14")
 
-      svg.append("g")
-           .attr("id", "y-axis")
-         .call(yAxis)
-           .attr("transform", `translate(${margin.left-0.5},0)`)
-         .style("font-size", "14")
+      svg
+        .append("g")
+          .attr("id", "y-axis")
+        .call(yAxis)
+          .attr("transform", `translate(${margin.left-0.5},0)`)
+          .style("font-size", "14")
+
+      // svg
+      //   .append("g")
+      //     .attr("id", "legend-axis")
+      //   .call(legendAxis)
+      //     .attr("transform", `translate(0, ${height - 50})`)
+      //     .style("font-size", "14")
+          
+
+      //add legend
+      // svg
+      //   .append("g")
+      //     .attr("id", "legend")
+      //   .selectAll("color-box")
+      //   .data(tempArr)
+      //   .enter()
+      //   .append("rect")
+      //   .classed("color-box", true)
+      //     .attr("x", function(d) {return legendXScale(d); })
+      //     .attr("y", height - 80)
+      //     .attr("width", 36)
+      //     .attr("height", 30)
+      //     .style("fill", d => legendColorScale(d))
+
+      // tooltip
+      let tooltip = d3.select("body")                    
+                      .append("div")
+                        .attr("id", "tooltip")                        
+                        .classed("tooltip", true);
       
       //draw rects
       svg
@@ -103,8 +142,37 @@ document.addEventListener("DOMContentLoaded", function() {
           .attr("data-temp", d => d.variance+baseTemperature)
           .attr("x", d => xScale(d3.timeParse(yearSpecifier)(d.year)))
           .attr("y", d => yScale(months[d.month-1]))
-          .attr("width", xScale.length*7)
+          .attr("width", 6)
           .attr("height", yScale.bandwidth())
           .style("fill", d => colorScale(d.variance+baseTemperature))
+        .on("mouseover", showTooltip)
+        .on("touchstart", showTooltip)
+        .on("mouseout", hideTooltip)    
+        .on("touchend", hideTooltip);
+
+        function showTooltip(d) {
+          let year = d.year;
+          let month = months[d.month-1];
+          let temperature = baseTemperature + d.variance;
+          let variance = d.variance;
+
+          d3.select(this).classed("highlight", true);
+
+          tooltip
+            .style("opacity", 1)
+            .style("left", `${d3.event.x - tooltip.node().offsetWidth/2}px`)
+            .style("top", `${d3.event.y + 25}px`)
+            .html(`
+              <p>${year} - ${month}</p>
+              <p>${temperature}</p>
+              <p>${variance}</p>
+            `);          
+        }
+  
+        function hideTooltip() {
+          d3.select(this).classed("highlight", false);
+          tooltip
+            .style("opacity", 0);
+        } 
     });
 });
