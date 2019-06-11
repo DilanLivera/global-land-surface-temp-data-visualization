@@ -34,10 +34,10 @@ body {
   stroke-width:px;   
 } */
 
-/* .color-box {
+.color-box {
   stroke-width: 1;
   stroke: black;
-} */
+}
 
 .tooltip {
   opacity: 0;  

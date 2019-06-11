@@ -30,9 +30,14 @@ document.addEventListener("DOMContentLoaded", function() {
       let data = response.monthlyVariance; // [{year: 1753,, month: 1, variance: -1.366}, {}, ...]
       let minYear = d3.min(data, d => d.year);
       let maxYear = d3.max(data, d => d.year);
-      // let minTemp = (d3.min(data, d => d.variance) + baseTemperature).toFixed(1);
-      // let maxTemp = (d3.max(data, d => d.variance) + baseTemperature).toFixed(1);      
-      // let tempArr = [2.8, 3.9, 5.0, 6.1, 7.2, 8.3, 9.5, 10.6, 11.7, 12.8];
+      let minTemp = (d3.min(data, d => d.variance) + baseTemperature).toFixed(1);
+      let maxTemp = (d3.max(data, d => d.variance) + baseTemperature).toFixed(1);
+      let tempArr = [
+        2.7934545454545456, 3.902909090909091, 5.012363636363636, 
+        6.121818181818182, 7.231272727272727, 8.340727272727273, 
+        9.45018181818181810, 10.559636363636365, 11.669090909090908, 
+        12.778545454545455
+      ]      
       
       //setup svg
       let svg = d3.select("svg")
@@ -64,13 +69,13 @@ document.addEventListener("DOMContentLoaded", function() {
                          .domain(d3.extent(data, d => baseTemperature + d.variance))
                          .range(colors);
 
-      // let legendXScale = d3.scaleLinear()
-      //                      .domain([1.7, 13.9])
-      //                      .range([margin.left, 600])
+      let legendXScale = d3.scaleLinear()
+                           .domain([minTemp, maxTemp])
+                           .range([margin.left, 600])
 
-      // let legendColorScale = d3.scaleThreshold()
-      //                          .domain([1.7, 2.8, 3.9, 5.0, 6.1, 7.2, 8.3, 9.5, 10.6, 11.7, 12.8, 13.9])
-      //                          .range(colors);
+      let legendColorScale = d3.scaleThreshold()
+                               .domain(tempArr)
+                               .range(colors);
 
       //setup axis
       let xAxis = d3.axisBottom(xScale)                    
@@ -81,10 +86,11 @@ document.addEventListener("DOMContentLoaded", function() {
       let yAxis = d3.axisLeft(yScale)
                     .tickSizeOuter(0)
 
-      // let legendAxis = d3.axisBottom(legendXScale)                         
-      //                    .tickValues(tempArr)
-      //                    .tickFormat(d => d)
-      //                    .tickSizeOuter(0)
+      let legendAxis = d3.axisBottom(legendXScale)
+                         .tickSize(10, 0)
+                         .tickValues(tempArr)
+                         .tickFormat(d3.format(".1f"))
+                         .tickSizeOuter(0);
 
       //add axis
       svg
@@ -101,28 +107,36 @@ document.addEventListener("DOMContentLoaded", function() {
           .attr("transform", `translate(${margin.left-0.5},0)`)
           .style("font-size", "14")
 
-      // svg
-      //   .append("g")
-      //     .attr("id", "legend-axis")
-      //   .call(legendAxis)
-      //     .attr("transform", `translate(0, ${height - 50})`)
-      //     .style("font-size", "14")
-          
+      let legend = svg
+                      .append("g")
+                        .attr("id", "legend")
+      legend
+        .append("g")
+          .attr("id", "legend-axis")
+        .call(legendAxis)
+          .attr("transform", `translate(0, ${height - 50})`)
+          .style("font-size", "14")
 
       //add legend
-      // svg
-      //   .append("g")
-      //     .attr("id", "legend")
-      //   .selectAll("color-box")
-      //   .data(tempArr)
-      //   .enter()
-      //   .append("rect")
-      //   .classed("color-box", true)
-      //     .attr("x", function(d) {return legendXScale(d); })
-      //     .attr("y", height - 80)
-      //     .attr("width", 36)
-      //     .attr("height", 30)
-      //     .style("fill", d => legendColorScale(d))
+      legend
+        .append("g")
+          .attr("id", "legend")
+        .selectAll("rect")
+        .data([
+          minTemp,
+          2.7934545454545456, 3.902909090909091, 5.012363636363636, 
+          6.121818181818182, 7.231272727272727, 8.340727272727273, 
+          9.45018181818181810, 10.559636363636365, 11.669090909090908, 
+          12.778545454545455
+        ])
+        .enter()
+        .append("rect")
+        .classed("color-box", true)
+          .attr("x", function(d) {return legendXScale(d); })
+          .attr("y", height - 80)
+          .attr("width", (600-margin.left)/11)
+          .attr("height", 30)
+          .style("fill", d => legendColorScale(d))
 
       //axis label
       svg
