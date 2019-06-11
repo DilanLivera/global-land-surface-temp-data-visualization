@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const url = "https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json";
   const width = 1800;
   const height = 800;
-  const margin = { top: 40, left: 180, bottom: 80, right: 0 };
+  const margin = { top: 40, left: 140, bottom: 80, right: 0 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
   const title = "Monthly Global Land-Surface Temperature";
@@ -123,6 +123,24 @@ document.addEventListener("DOMContentLoaded", function() {
       //     .attr("width", 36)
       //     .attr("height", 30)
       //     .style("fill", d => legendColorScale(d))
+
+      //axis label
+      svg
+        .append("text")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-90)")
+        .attr("x", margin.top-300)
+        .attr("y", margin.left/2)
+        .text("Months")
+        .style("font-weight", "600")
+
+        svg
+        .append("text")
+        .attr("text-anchor", "end")
+        .attr("x", width/2)
+        .attr("y", innerHeight + 40)
+        .text("Years")
+        .style("font-weight", "600")        
 
       // tooltip
       let tooltip = d3.select("body")                    
