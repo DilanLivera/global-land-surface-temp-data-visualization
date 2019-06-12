@@ -30,14 +30,15 @@ document.addEventListener("DOMContentLoaded", function() {
       let data = response.monthlyVariance; // [{year: 1753,, month: 1, variance: -1.366}, {}, ...]
       let minYear = d3.min(data, d => d.year);
       let maxYear = d3.max(data, d => d.year);
-      let minTemp = (d3.min(data, d => d.variance) + baseTemperature).toFixed(1);
-      let maxTemp = (d3.max(data, d => d.variance) + baseTemperature).toFixed(1);
-      let tempArr = [
-        2.7934545454545456, 3.902909090909091, 5.012363636363636, 
-        6.121818181818182, 7.231272727272727, 8.340727272727273, 
-        9.45018181818181810, 10.559636363636365, 11.669090909090908, 
-        12.778545454545455
-      ]      
+      let minTemp = parseFloat((d3.min(data, d => d.variance) + baseTemperature).toFixed(1));
+      let maxTemp = parseFloat((d3.max(data, d => d.variance) + baseTemperature).toFixed(1));
+
+      //create temperature arr for legend
+      let increment = (maxTemp-minTemp)/colors.length;
+      let tempArr = [minTemp + increment];      
+      for(let i = 1; i < colors.length; i ++){
+        tempArr.push(tempArr[i-1]+ increment);
+      }  
       
       //setup svg
       let svg = d3.select("svg")
@@ -121,13 +122,10 @@ document.addEventListener("DOMContentLoaded", function() {
       legend
         .append("g")
         .selectAll("rect")
-        .data([
-          minTemp,
-          2.7934545454545456, 3.902909090909091, 5.012363636363636, 
-          6.121818181818182, 7.231272727272727, 8.340727272727273, 
-          9.45018181818181810, 10.559636363636365, 11.669090909090908, 
-          12.778545454545455
-        ])
+        .data(function() {
+          tempArr.unshift(minTemp);
+          return tempArr;
+        })
         .enter()
         .append("rect")
         .classed("color-box", true)
