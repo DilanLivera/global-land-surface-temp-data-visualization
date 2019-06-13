@@ -168,7 +168,7 @@ document.addEventListener("DOMContentLoaded", function() {
         .classed("cell", true)
           .attr("data-month", d => d.month-1)
           .attr("data-year", d => d.year)
-          .attr("data-temp", d => d.variance+baseTemperature)
+          .attr("data-temp", d => (d.variance+baseTemperature).toFixed(2))
           .attr("x", d => xScale(d3.timeParse(yearSpecifier)(d.year)))
           .attr("y", d => yScale(months[d.month-1]))
           .attr("width", 6)
@@ -182,8 +182,8 @@ document.addEventListener("DOMContentLoaded", function() {
         function showTooltip(d) {
           let year = d.year;
           let month = months[d.month-1];
-          let temperature = baseTemperature + d.variance;
-          let variance = d.variance;
+          let temperature = (baseTemperature + d.variance).toFixed(2);
+          let variance = d.variance.toFixed(2);
 
           d3.select(this).classed("highlight", true);
 
